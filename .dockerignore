@@ -1,0 +1,18 @@
+# Ignore text files
+*.txt
+*.md
+LICENSE
+
+# UV/Python virtual env files
+.venv/
+.python-version
+
+# Git
+.git/
+.gitignore
+.gitea/
+.pre-commit-config.yaml
+
+# Docker build files
+Dockerfile
+.dockerignore

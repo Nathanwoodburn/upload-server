@@ -1,0 +1,20 @@
+body {
+    background-color: #000000;
+    color: #ffffff;
+}
+h1 {
+    font-size: 50px;
+    margin: 0;
+    padding: 0;
+}
+.centre {
+    margin-top: 10%;
+    text-align: center;
+}
+a {
+    color: #ffffff;
+    text-decoration: none;
+}
+a:hover {
+    text-decoration: underline;
+}

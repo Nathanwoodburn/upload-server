@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nathan.Woodburn/</title>
+    <link rel="icon" href="/assets/img/favicon.png" type="image/png">
+    <link rel="stylesheet" href="/assets/css/index.css">
+</head>
+
+<body>
+    <div class="spacer"></div>
+    <div class="centre">
+        <h1>Nathan.Woodburn/</h1>
+        <span>The current date and time is {{datetime}}</span>
+    </div>
+
+    <div class="spacer"></div>
+    <div class="centre">
+        <h2 id="test-content-header">Pulling data</h2>
+        <span class="test-content">This is a test content area that will be updated with data from the server.</span>
+        <br>
+        <br>
+        <span class="test-content-timestamp">Timestamp: Waiting to pull data</span>
+    </div>
+
+    <script>
+        function fetchData() {
+            // Fetch the data from the server
+            fetch('/api/v1/data')
+                .then(response => response.json())
+                .then(data => {
+                    // Get the data header element
+                    const dataHeader = document.getElementById('test-content-header');
+                    // Update the header with the fetched data
+                    dataHeader.textContent = data.header;
+                    // Get the test content element
+                    const testContent = document.querySelector('.test-content');
+                    // Update the content with the fetched data
+                    testContent.textContent = data.content;
+
+                    // Get the timestamp element
+                    const timestampElement = document.querySelector('.test-content-timestamp');
+                    // Update the timestamp with the fetched data
+                    timestampElement.textContent = `Timestamp: ${data.timestamp}`;
+                })
+                .catch(error => console.error('Error fetching data:', error));
+        }
+
+        // Initial fetch after 2 seconds
+        setTimeout(fetchData, 2000);
+        
+        // Then fetch every 2 seconds
+        setInterval(fetchData, 2000);
+    </script>
+
+</body>
+
+</html>
