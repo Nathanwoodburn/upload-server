@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Uploaded Links</title>
+    <link rel="icon" href="/favicon.png" type="image/png">
+    <link rel="stylesheet" href="/assets/css/index.css">
+    <style>
+        :root {
+            --bg-color: #0d0e11;
+            --card-bg: #16181d;
+            --border-color: #272a34;
+            --accent: #3b82f6;
+            --text: #f3f4f6;
+            --text-muted: #9ca3af;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin: 0;
+        }
+
+        .links-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        .links-table th {
+            text-align: left;
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-muted);
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        .links-table td {
+            padding: 14px 12px;
+            border-bottom: 1px solid #1f232b;
+            vertical-align: middle;
+        }
+
+        .file-name {
+            font-weight: 600;
+            color: var(--text);
+            display: block;
+            word-break: break-all;
+        }
+
+        .file-meta {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 9999px;
+            font-size: 12px;
+            font-weight: 500;
+            background: rgba(139, 92, 246, 0.15);
+            color: #c084fc;
+        }
+
+        .action-btns {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            text-decoration: none;
+            font-weight: 500;
+            border: 1px solid var(--border-color);
+            background: #20232a;
+            color: var(--text);
+            cursor: pointer;
+        }
+
+        .action-btn:hover {
+            background: #2d313b;
+        }
+
+        .action-btn.btn-del {
+            color: #f87171;
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .action-btn.btn-del:hover {
+            background: rgba(239, 68, 68, 0.15);
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-bar">
+            <h1>My Uploaded Files</h1>
+            <a href="/" class="btn-primary">+ Upload New File</a>
+        </div>
+
+        <div class="card">
+            {% if files %}
+            <div style="overflow-x: auto;">
+                <table class="links-table">
+                    <thead>
+                        <tr>
+                            <th>File</th>
+                            <th>Expires</th>
+                            <th>Downloads</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for f in files %}
+                        <tr>
+                            <td>
+                                <span class="file-name">{{ f.original_filename }}</span>
+                                <span class="file-meta">{{ f.human_size }} &bull; slug: <code>{{ f.slug }}</code></span>
+                            </td>
+                            <td>
+                                <span class="badge">{{ f.relative_expiry }}</span>
+                            </td>
+                            <td>{{ f.downloads_count }}</td>
+                            <td>
+                                <div class="action-btns">
+                                    <button type="button" class="action-btn" onclick="copyUrl('{{ f.download_url }}')">Copy Link</button>
+                                    <a href="/modify/{{ f.manage_token }}" class="action-btn">Modify</a>
+                                    <a href="/delete/{{ f.delete_token }}" class="action-btn btn-del">Delete</a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <p style="font-size: 16px;">No active uploads found.</p>
+                <p style="font-size: 14px;"><a href="/" style="color: var(--accent);">Upload a file</a> or use the CLI command <code>upload &lt;file&gt;</code>.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        function copyUrl(url) {
+            navigator.clipboard.writeText(url).then(() => {
+                alert('Download link copied to clipboard!\n' + url);
+            });
+        }
+    </script>
+</body>
+</html>

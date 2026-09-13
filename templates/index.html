@@ -4,57 +4,522 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nathan.Woodburn/</title>
-    <link rel="icon" href="/assets/img/favicon.png" type="image/png">
+    <title>Upload Server</title>
+    <link rel="icon" href="/favicon.png" type="image/png">
     <link rel="stylesheet" href="/assets/css/index.css">
+    <style>
+        :root {
+            --bg-color: #0d0e11;
+            --card-bg: #16181d;
+            --border-color: #272a34;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --text: #f3f4f6;
+            --text-muted: #9ca3af;
+            --danger: #ef4444;
+            --success: #10b981;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            margin: 0;
+            padding: 0;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 36px;
+        }
+
+        header h1 {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        header p {
+            color: var(--text-muted);
+            margin: 0;
+            font-size: 16px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+        }
+
+        @media (min-width: 768px) {
+            .grid-2 {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-top: 0;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* CLI Box */
+        .cli-box {
+            background: #08090c;
+            border: 1px solid #1f232b;
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+            font-size: 13px;
+            color: #38bdf8;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            overflow-x: auto;
+        }
+
+        .cli-box code {
+            white-space: nowrap;
+        }
+
+        .copy-btn {
+            background: #272a34;
+            color: #d1d5db;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            margin-left: 12px;
+            flex-shrink: 0;
+            transition: all 0.15s ease;
+        }
+
+        .copy-btn:hover {
+            background: #374151;
+            color: #fff;
+        }
+
+        /* Upload Dropzone */
+        .dropzone {
+            border: 2px dashed #374151;
+            border-radius: 8px;
+            padding: 32px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: #111317;
+        }
+
+        .dropzone:hover, .dropzone.dragover {
+            border-color: var(--accent);
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+        .dropzone-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .form-group {
+            flex: 1;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        input[type="text"], select {
+            width: 100%;
+            padding: 10px 12px;
+            background: #08090c;
+            border: 1px solid var(--border-color);
+            color: var(--text);
+            border-radius: 6px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        input[type="text"]:focus, select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .btn-submit {
+            width: 100%;
+            margin-top: 16px;
+            background: var(--accent);
+            color: #ffffff;
+            border: none;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.15s ease;
+        }
+
+        .btn-submit:hover {
+            background: var(--accent-hover);
+        }
+
+        /* Table of Links */
+        .links-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            margin-top: 8px;
+        }
+
+        .links-table th {
+            text-align: left;
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-muted);
+            font-weight: 500;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .links-table td {
+            padding: 14px 12px;
+            border-bottom: 1px solid #1f232b;
+            vertical-align: middle;
+        }
+
+        .file-name {
+            font-weight: 600;
+            color: var(--text);
+            display: block;
+            word-break: break-all;
+        }
+
+        .file-meta {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 9999px;
+            font-size: 12px;
+            font-weight: 500;
+            background: #272a34;
+            color: #d1d5db;
+        }
+
+        .badge-expiry {
+            background: rgba(139, 92, 246, 0.15);
+            color: #c084fc;
+            border: 1px solid rgba(139, 92, 246, 0.3);
+        }
+
+        .action-btns {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            text-decoration: none;
+            font-weight: 500;
+            border: 1px solid var(--border-color);
+            background: #20232a;
+            color: var(--text);
+            transition: all 0.15s ease;
+        }
+
+        .action-btn:hover {
+            background: #2d313b;
+            text-decoration: none;
+        }
+
+        .action-btn.btn-del {
+            color: #f87171;
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .action-btn.btn-del:hover {
+            background: rgba(239, 68, 68, 0.15);
+        }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            font-size: 14px;
+        }
+
+        .alert-success {
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            color: #34d399;
+        }
+
+        .alert-error {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            color: #f87171;
+        }
+
+        .token-sync-box {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .token-form {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 32px 16px;
+            color: var(--text-muted);
+        }
+    </style>
 </head>
 
 <body>
-    <div class="spacer"></div>
-    <div class="centre">
-        <h1>Nathan.Woodburn/</h1>
-        <span>The current date and time is {{datetime}}</span>
-    </div>
+    <div class="container">
+        <header>
+            <h1>CLI & Web Upload Server</h1>
+            <p>Effortless uploads via curl, shell alias, or web interface with auto-expiry & custom links.</p>
+        </header>
 
-    <div class="spacer"></div>
-    <div class="centre">
-        <h2 id="test-content-header">Pulling data</h2>
-        <span class="test-content">This is a test content area that will be updated with data from the server.</span>
-        <br>
-        <br>
-        <span class="test-content-timestamp">Timestamp: Waiting to pull data</span>
+        {% if message %}
+            <div class="alert alert-success">{{ message }}</div>
+        {% endif %}
+        {% if error %}
+            <div class="alert alert-error">{{ error }}</div>
+        {% endif %}
+
+        <div class="grid">
+            <!-- CLI Quick Start Card -->
+            <div class="card">
+                <div class="card-title">
+                    <span>Quick CLI Setup</span>
+                    <span class="badge">Linux / macOS / WSL</span>
+                </div>
+                <p style="font-size: 14px; color: var(--text-muted); margin-top: 0; margin-bottom: 12px;">
+                    Install the shell function in your <code>~/.bashrc</code> or <code>~/.zshrc</code>:
+                </p>
+                <div class="cli-box">
+                    <code id="bashrcCmd">curl -sL {{ base_url }}/bashrc >> ~/.bashrc && source ~/.bashrc</code>
+                    <button type="button" class="copy-btn" onclick="copyText('bashrcCmd')">Copy</button>
+                </div>
+
+                <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 8px;">
+                    Then upload anytime from your terminal:
+                </p>
+                <div class="cli-box">
+                    <code id="aliasCmd">upload report.pdf 7d</code>
+                    <button type="button" class="copy-btn" onclick="copyText('aliasCmd')">Copy</button>
+                </div>
+
+                <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 8px;">
+                    Or upload using plain <code>curl</code>:
+                </p>
+                <div class="cli-box">
+                    <code id="curlCmd">curl -F "file=@report.pdf" {{ base_url }}/</code>
+                    <button type="button" class="copy-btn" onclick="copyText('curlCmd')">Copy</button>
+                </div>
+            </div>
+
+            <!-- Web Upload Card -->
+            <div class="card">
+                <div class="card-title">
+                    <span>Web Uploader</span>
+                    <span class="badge">Direct Upload</span>
+                </div>
+                <form id="uploadForm" action="/upload" method="POST" enctype="multipart/form-data">
+                    <div class="dropzone" id="dropzone" onclick="document.getElementById('fileInput').click()">
+                        <div class="dropzone-icon">&#128196;</div>
+                        <div style="font-weight: 500;" id="dropzoneText">Click to choose a file or drag & drop here</div>
+                        <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Any file format supported</div>
+                        <input type="file" id="fileInput" name="file" style="display: none;" required onchange="onFileSelected(this)">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="expirySelect">Expiry (default 7 days)</label>
+                            <select id="expirySelect" name="expires">
+                                <option value="1h">1 Hour</option>
+                                <option value="1d">1 Day</option>
+                                <option value="7d" selected>7 Days (Default)</option>
+                                <option value="14d">14 Days</option>
+                                <option value="30d">30 Days</option>
+                                <option value="365d">1 Year</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="customSlug">Custom Link Slug (Optional)</label>
+                            <input type="text" id="customSlug" name="slug" placeholder="e.g. notes-2026">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-submit" id="submitBtn">Upload File</button>
+                </form>
+            </div>
+
+            <!-- Active Uploads Card -->
+            <div class="card">
+                <div class="card-title">
+                    <span>My Uploaded Links</span>
+                    <span class="badge">{{ files|length }} file{{ 's' if files|length != 1 else '' }}</span>
+                </div>
+
+                {% if files %}
+                <div style="overflow-x: auto;">
+                    <table class="links-table">
+                        <thead>
+                            <tr>
+                                <th>File</th>
+                                <th>Expires</th>
+                                <th>Downloads</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for f in files %}
+                            <tr>
+                                <td>
+                                    <span class="file-name">{{ f.original_filename }}</span>
+                                    <span class="file-meta">{{ f.human_size }} &bull; slug: <code>{{ f.slug }}</code></span>
+                                </td>
+                                <td>
+                                    <span class="badge badge-expiry">{{ f.relative_expiry }}</span>
+                                </td>
+                                <td>{{ f.downloads_count }}</td>
+                                <td>
+                                    <div class="action-btns">
+                                        <button type="button" class="action-btn" onclick="copyUrl('{{ f.download_url }}')">Copy Link</button>
+                                        <a href="/modify/{{ f.manage_token }}" class="action-btn">Modify</a>
+                                        <a href="/delete/{{ f.delete_token }}" class="action-btn btn-del">Delete</a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <p style="margin: 0; font-size: 15px;">No active uploads found for your current session.</p>
+                    <p style="margin-top: 4px; font-size: 13px;">Upload a file using the form above or via CLI with <code>upload</code> / <code>curl</code>.</p>
+                </div>
+                {% endif %}
+
+                <!-- Device / Token Sync -->
+                <div class="token-sync-box">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                        <span><strong>Your User Token:</strong> <code>{{ user_token }}</code></span>
+                        <button type="button" class="copy-btn" onclick="copyRaw('{{ user_token }}')">Copy Token</button>
+                    </div>
+                    <span style="font-size: 12px;">To sync your CLI uploads with this browser, copy your CLI token from <code>~/.config/upload-server/token</code> or enter it below:</span>
+                    <form class="token-form" action="/api/token/switch" method="POST">
+                        <input type="text" name="token" placeholder="Paste user token or machine UUID" required style="font-family: monospace; font-size: 13px;">
+                        <button type="submit" class="action-btn" style="white-space: nowrap;">Switch Token</button>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
-        function fetchData() {
-            // Fetch the data from the server
-            fetch('/api/v1/data')
-                .then(response => response.json())
-                .then(data => {
-                    // Get the data header element
-                    const dataHeader = document.getElementById('test-content-header');
-                    // Update the header with the fetched data
-                    dataHeader.textContent = data.header;
-                    // Get the test content element
-                    const testContent = document.querySelector('.test-content');
-                    // Update the content with the fetched data
-                    testContent.textContent = data.content;
-
-                    // Get the timestamp element
-                    const timestampElement = document.querySelector('.test-content-timestamp');
-                    // Update the timestamp with the fetched data
-                    timestampElement.textContent = `Timestamp: ${data.timestamp}`;
-                })
-                .catch(error => console.error('Error fetching data:', error));
+        function copyText(elementId) {
+            const text = document.getElementById(elementId).innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Copied to clipboard!');
+            });
         }
 
-        // Initial fetch after 2 seconds
-        setTimeout(fetchData, 2000);
-        
-        // Then fetch every 2 seconds
-        setInterval(fetchData, 2000);
-    </script>
+        function copyRaw(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Token copied to clipboard!');
+            });
+        }
 
+        function copyUrl(url) {
+            navigator.clipboard.writeText(url).then(() => {
+                alert('Download link copied to clipboard!\n' + url);
+            });
+        }
+
+        function onFileSelected(input) {
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+                document.getElementById('dropzoneText').innerHTML = 'Selected: <strong>' + file.name + '</strong> (' + (file.size / 1024 / 1024).toFixed(2) + ' MB)';
+            }
+        }
+
+        const dropzone = document.getElementById('dropzone');
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropzone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropzone.classList.add('dragover');
+            }, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropzone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropzone.classList.remove('dragover');
+            }, false);
+        });
+
+        dropzone.addEventListener('drop', (e) => {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            if (files && files.length > 0) {
+                document.getElementById('fileInput').files = files;
+                onFileSelected(document.getElementById('fileInput'));
+            }
+        });
+    </script>
 </body>
 
 </html>

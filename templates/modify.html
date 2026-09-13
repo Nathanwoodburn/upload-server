@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modify Upload | {{ file.original_filename }}</title>
+    <link rel="icon" href="/favicon.png" type="image/png">
+    <link rel="stylesheet" href="/assets/css/index.css">
+    <style>
+        .container {
+            max-width: 700px;
+            margin: 40px auto;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+        .card {
+            background: #161618;
+            border: 1px solid #27272a;
+            border-radius: 10px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+        .header-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+        h1 {
+            font-size: 24px;
+            margin: 0;
+        }
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 9999px;
+            font-size: 12px;
+            font-weight: 600;
+            background: #27272a;
+            color: #a1a1aa;
+        }
+        .badge.expires {
+            background: #2e1065;
+            color: #c084fc;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin: 16px 0;
+            font-size: 14px;
+        }
+        .info-label {
+            color: #71717a;
+        }
+        .info-val {
+            font-weight: 500;
+            word-break: break-all;
+        }
+        .link-box {
+            display: flex;
+            gap: 8px;
+            margin: 16px 0;
+        }
+        input[type="text"], select {
+            width: 100%;
+            padding: 10px 12px;
+            background: #09090b;
+            border: 1px solid #27272a;
+            color: #fafafa;
+            border-radius: 6px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        input[type="text"]:focus, select:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 18px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            text-decoration: none;
+            transition: background 0.15s ease;
+        }
+        .btn-primary {
+            background: #2563eb;
+            color: #ffffff;
+        }
+        .btn-primary:hover {
+            background: #1d4ed8;
+            text-decoration: none;
+        }
+        .btn-secondary {
+            background: #27272a;
+            color: #fafafa;
+        }
+        .btn-secondary:hover {
+            background: #3f3f46;
+            text-decoration: none;
+        }
+        .btn-danger {
+            background: #dc2626;
+            color: #ffffff;
+        }
+        .btn-danger:hover {
+            background: #b91c1c;
+            text-decoration: none;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #a1a1aa;
+        }
+        .form-hint {
+            font-size: 12px;
+            color: #71717a;
+            margin-top: 4px;
+        }
+        .alert {
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        .alert-success {
+            background: #064e3b;
+            color: #a7f3d0;
+            border: 1px solid #059669;
+        }
+        .alert-error {
+            background: #7f1d1d;
+            color: #fecaca;
+            border: 1px solid #dc2626;
+        }
+        .divider {
+            height: 1px;
+            background: #27272a;
+            margin: 24px 0;
+        }
+        .back-link {
+            color: #93c5fd;
+            text-decoration: none;
+            font-size: 14px;
+            display: inline-block;
+            margin-bottom: 16px;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back-link">&larr; Back to Uploads</a>
+
+        {% if message %}
+            <div class="alert alert-success">{{ message }}</div>
+        {% endif %}
+        {% if error %}
+            <div class="alert alert-error">{{ error }}</div>
+        {% endif %}
+
+        <div class="card">
+            <div class="header-title">
+                <h1>{{ file.original_filename }}</h1>
+                <span class="badge expires">Expires in {{ relative_expiry }}</span>
+            </div>
+
+            <div class="info-grid">
+                <div>
+                    <div class="info-label">File Size</div>
+                    <div class="info-val">{{ human_size }}</div>
+                </div>
+                <div>
+                    <div class="info-label">Downloads</div>
+                    <div class="info-val">{{ file.downloads_count }}</div>
+                </div>
+                <div>
+                    <div class="info-label">Uploaded At</div>
+                    <div class="info-val">{{ file.created_at }}</div>
+                </div>
+                <div>
+                    <div class="info-label">Expires At</div>
+                    <div class="info-val">{{ file.expires_at }}</div>
+                </div>
+            </div>
+
+            <label>Current Download Link:</label>
+            <div class="link-box">
+                <input type="text" readonly id="downloadUrl" value="{{ download_url }}">
+                <button type="button" class="btn btn-secondary" onclick="copyLink()">Copy</button>
+                <a href="{{ download_url }}" target="_blank" class="btn btn-secondary">Open</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 style="margin-top: 0; font-size: 18px;">Modify Link & Expiry</h2>
+            <form method="POST" action="/modify/{{ file.manage_token }}" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="slug">Custom Link Slug (Vanity URL)</label>
+                    <input type="text" id="slug" name="slug" value="{{ file.slug }}" required>
+                    <div class="form-hint">Letters, numbers, hyphens, underscores, and dots (e.g. <code>my-document.pdf</code>).</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="expires">Update Expiry</label>
+                    <input type="text" id="expires" name="expires" placeholder="Leave empty to keep current expiry (e.g. 24h, 7d, 30d, 1y)">
+                    <div class="form-hint">Supported units: <code>30m</code>, <code>2h</code>, <code>1d</code>, <code>7d</code>, <code>30d</code>, <code>1y</code>.</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="file">Replace File (Optional)</label>
+                    <input type="file" id="file" name="file" style="color: #a1a1aa; font-size: 13px;">
+                    <div class="form-hint">Keep the same link while updating the file contents.</div>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Save Changes</button>
+            </form>
+        </div>
+
+        <div class="card" style="border-color: #7f1d1d;">
+            <h2 style="margin-top: 0; font-size: 18px; color: #f87171;">Danger Zone</h2>
+            <p style="font-size: 14px; color: #a1a1aa; margin-bottom: 16px;">
+                Permanently delete this file immediately. This action cannot be undone.
+            </p>
+            <a href="/delete/{{ file.delete_token }}" class="btn btn-danger">Delete This File</a>
+        </div>
+    </div>
+
+    <script>
+        function copyLink() {
+            const input = document.getElementById('downloadUrl');
+            input.select();
+            input.setSelectionRange(0, 99999);
+            navigator.clipboard.writeText(input.value).then(() => {
+                alert('Download link copied to clipboard!');
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirm Delete | {{ file.original_filename if file else 'File' }}</title>
+    <link rel="icon" href="/favicon.png" type="image/png">
+    <link rel="stylesheet" href="/assets/css/index.css">
+    <style>
+        .container {
+            max-width: 500px;
+            margin: 80px auto;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            text-align: center;
+        }
+        .card {
+            background: #161618;
+            border: 1px solid #27272a;
+            border-radius: 10px;
+            padding: 32px 24px;
+        }
+        h1 {
+            font-size: 22px;
+            margin-top: 0;
+            margin-bottom: 12px;
+            color: #fafafa;
+        }
+        p {
+            color: #a1a1aa;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 24px;
+        }
+        .filename-box {
+            background: #09090b;
+            border: 1px solid #27272a;
+            padding: 10px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 14px;
+            color: #f87171;
+            margin-bottom: 24px;
+            word-break: break-all;
+        }
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            text-decoration: none;
+        }
+        .btn-danger {
+            background: #dc2626;
+            color: #ffffff;
+        }
+        .btn-danger:hover {
+            background: #b91c1c;
+        }
+        .btn-secondary {
+            background: #27272a;
+            color: #fafafa;
+        }
+        .btn-secondary:hover {
+            background: #3f3f46;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h1>Confirm Deletion</h1>
+            {% if file %}
+                <p>Are you sure you want to permanently delete this file?</p>
+                <div class="filename-box">{{ file.original_filename }} ({{ human_size }})</div>
+                <form method="POST" action="/delete/{{ file.delete_token }}">
+                    <div class="btn-group">
+                        <a href="/" class="btn btn-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-danger">Yes, Delete File</button>
+                    </div>
+                </form>
+            {% else %}
+                <p>This file has already been deleted or does not exist.</p>
+                <a href="/" class="btn btn-secondary">Return Home</a>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
